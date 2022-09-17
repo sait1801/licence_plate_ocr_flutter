@@ -43,6 +43,13 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     );
   }
 
+  bool _isNumeric(String str) {
+    if (str == null) {
+      return false;
+    }
+    return double.tryParse(str) != null;
+  }
+
   Future<void> processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
@@ -51,6 +58,31 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
       _text = '';
     });
     final recognizedText = await _textRecognizer.processImage(inputImage);
+    List<String> recognisedarray = recognizedText.text.split("\n");
+    for (var arr in recognisedarray) {
+      arr = arr.replaceAll(" ", "");
+      if (arr.length == 7) {
+        String num_part = arr.substring(0, 4);
+        String str_part = arr.substring(4);
+        if (_isNumeric(num_part)) {
+          if (!(_isNumeric(str_part[0])) &&
+              !(_isNumeric(str_part[1])) &&
+              !(_isNumeric(str_part[2]))) {
+            print("**********************************");
+            print(arr);
+            print("**********************************");
+
+            if (await FireStoreHelper().checkPlates(recognizedText.text)) {
+              FireStoreHelper().createPlate(recognizedText.text);
+            } else {
+              print("Plate Already Exist");
+            }
+          }
+        }
+        ;
+      }
+    }
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       final painter = TextRecognizerPainter(
@@ -64,11 +96,6 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
       _customPaint = null;
       if (_text != null) {
         print("here");
-        if (await FireStoreHelper().checkPlates(recognizedText.text)) {
-          FireStoreHelper().createPlate(recognizedText.text);
-        } else {
-          print("Plate Already Exist");
-        }
       }
     }
     _isBusy = false;
