@@ -58,17 +58,22 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
       _customPaint = CustomPaint(painter: painter);
+      print("here=====================================================");
+      print(recognizedText.text);
+      await FireStoreHelper().createPlate(recognizedText.text);
     } else {
       _text = 'Recognized text:\n\n${recognizedText.text}';
-      // TODO: set _customPaint to draw boundingRect on top of image
       _customPaint = null;
       if (_text != null) {
-        print("here");
-        if (await FireStoreHelper().checkPlates(recognizedText.text)) {
-          FireStoreHelper().createPlate(recognizedText.text);
-        } else {
-          print("Plate Already Exist");
-        }
+        print("here=====================================================");
+        print(recognizedText.text);
+        await FireStoreHelper().createPlate(recognizedText.text);
+
+        // if (await FireStoreHelper().checkPlates(recognizedText.text)) {
+        //  await  FireStoreHelper().createPlate(recognizedText.text);
+        // } else {
+        //   print("Plate Already Exist");
+        // }
       }
     }
     _isBusy = false;

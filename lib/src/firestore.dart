@@ -22,9 +22,9 @@ class FireStoreHelper {
     try {
       final platesSnapshot = await platesReference.doc(plate).get();
       if (platesSnapshot.exists != null) {
-        return true;
-      } else {
         return false;
+      } else {
+        return true;
       }
     } catch (e) {
       print(e);
