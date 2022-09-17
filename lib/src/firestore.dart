@@ -21,11 +21,8 @@ class FireStoreHelper {
   Future<bool> checkPlates(String plate) async {
     try {
       final platesSnapshot = await platesReference.doc(plate).get();
-      if (platesSnapshot.exists != null) {
-        return false;
-      } else {
-        return true;
-      }
+
+      return platesSnapshot.exists;
     } catch (e) {
       print(e);
       rethrow;

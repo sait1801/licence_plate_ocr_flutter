@@ -15,6 +15,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   bool _isBusy = false;
   CustomPaint? _customPaint;
   String? _text;
+  int counter = 0;
 
   @override
   void dispose() async {
@@ -33,7 +34,11 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
           customPaint: _customPaint,
           text: _text,
           onImage: (inputImage) {
-            processImage(inputImage);
+            if (counter % 10 == 0) {
+              processImage(inputImage);
+              counter = 0;
+            }
+            counter++;
           },
         ),
       ),
@@ -61,21 +66,21 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
       for (var arr in recognisedarray) {
         arr = arr.replaceAll(" ", "");
         if (arr.length == 7) {
-          String num_part = arr.substring(0, 4);
-          String str_part = arr.substring(4);
-          if (_isNumeric(num_part)) {
-            if (!(_isNumeric(str_part[0])) &&
-                !(_isNumeric(str_part[1])) &&
-                !(_isNumeric(str_part[2]))) {
+          String numPart = arr.substring(0, 4);
+          String strPart = arr.substring(4);
+          if (_isNumeric(numPart)) {
+            if (!(_isNumeric(strPart[0])) &&
+                !(_isNumeric(strPart[1])) &&
+                !(_isNumeric(strPart[2]))) {
               print("**********************************");
               print(arr);
               print("**********************************");
 
-              if (await FireStoreHelper().checkPlates(arr)) {
-                FireStoreHelper().createPlate(arr);
-                print("Plate created.");
-              } else {
+              if (await FireStoreHelper().checkPlates(arr.toLowerCase())) {
                 print("Plate Already Exist");
+              } else {
+                FireStoreHelper().createPlate(arr.toLowerCase());
+                print("Plate created.");
               }
             }
           }
