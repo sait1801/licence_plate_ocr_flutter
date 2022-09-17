@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:plate_recognition/src/firestore.dart';
-import 'package:plate_recognition/src/painter.dart';
-
 import 'camera_view.dart';
-import 'painter.dart';
 
 class TextRecognizerView extends StatefulWidget {
   // FirebaseCrud _firebseCrud = FirebaseCrud();
