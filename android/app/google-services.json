@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "893085564745",
+    "project_id": "upwork-20c3b",
+    "storage_bucket": "upwork-20c3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893085564745:android:ab899c9fb834e6db72a498",
+        "android_client_info": {
+          "package_name": "com.example.plate_recognition"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893085564745-deob92g1t09rkbvq7m5qjf6tjfit0srl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx1pkcvG5nTXtUYJa3fnCjc6Fl-cE2aRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893085564745-deob92g1t09rkbvq7m5qjf6tjfit0srl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
