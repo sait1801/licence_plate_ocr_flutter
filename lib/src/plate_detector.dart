@@ -31,7 +31,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: CameraView(
-          title: 'Text Detector',
+          title: 'Plate Detector',
           customPaint: _customPaint,
           text: _text,
           onImage: (inputImage) {
