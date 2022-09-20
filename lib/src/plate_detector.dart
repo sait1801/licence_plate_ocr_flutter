@@ -18,9 +18,10 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   int counter = 0;
 
   @override
-  void dispose() async {
+  void dispose() {
     _canProcess = false;
     _textRecognizer.close();
+    FireStoreHelper().createPlateMap(); //TODO: check if this works
     super.dispose();
   }
 
@@ -35,6 +36,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
           text: _text,
           onImage: (inputImage) {
             if (counter % 10 == 0) {
+              // this will affect the performance of app
               processImage(inputImage);
               counter = 0;
             }

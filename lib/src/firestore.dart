@@ -7,8 +7,14 @@ class FireStoreHelper {
   CollectionReference platesReference =
       FirebaseFirestore.instance.collection("plates");
 
+  List<String> plates = [];
+
   Future<void> createPlate(String plate) async {
     try {
+      if (plates.contains(plate)) {
+        return;
+      }
+      plates.add(plate);
       await platesReference.doc(plate).set(
         {'plate_id': plate},
       );
@@ -20,9 +26,24 @@ class FireStoreHelper {
 
   Future<bool> checkPlates(String plate) async {
     try {
-      final platesSnapshot = await platesReference.doc(plate).get();
+      if (plates.contains(plate)) {
+        return true;
+      } else {
+        final platesSnapshot = await platesReference.doc(plate).get();
 
-      return platesSnapshot.exists;
+        return platesSnapshot.exists;
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> createPlateMap() async {
+    try {
+      plates.forEach((plate) {
+        createPlate(plate);
+      });
     } catch (e) {
       print(e);
       rethrow;

@@ -1,0 +1,2 @@
+1) firebase online and sinlge request done
+2) 5 frames but double ocr
