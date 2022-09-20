@@ -21,7 +21,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   void dispose() {
     _canProcess = false;
     _textRecognizer.close();
-    FireStoreHelper().createPlateMap(); //TODO: check if this works
+    FireStoreHelper().createPlateMap();
     super.dispose();
   }
 
