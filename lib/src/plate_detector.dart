@@ -77,13 +77,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
               print("**********************************");
               print(arr);
               print("**********************************");
-
-              if (await FireStoreHelper().checkPlates(arr.toLowerCase())) {
-                print("Plate Already Exist");
-              } else {
-                FireStoreHelper().createPlate(arr.toLowerCase());
-                print("Plate created.");
-              }
+              FireStoreHelper().checkPlates(arr.toLowerCase());
             }
           }
           ;
