@@ -18,12 +18,19 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   int counter = 0;
   FireStoreHelper _fireStoreHelper = FireStoreHelper();
 
+  var time1 = DateTime.now();
+
   @override
   void dispose() {
     _canProcess = false;
     _textRecognizer.close();
     _fireStoreHelper.createPlateMap();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _fireStoreHelper.createPlateMap();
   }
 
   @override
@@ -75,8 +82,13 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
             if (!(_isNumeric(strPart[0])) &&
                 !(_isNumeric(strPart[1])) &&
                 !(_isNumeric(strPart[2]))) {
+              var time2 = DateTime.now();
+              var timeDifference = time2.difference(time1).inSeconds;
+              time1 = DateTime.now();
+
               print("**********************************");
               print(arr);
+              print(timeDifference);
               print("**********************************");
               _fireStoreHelper.checkPlates(arr.toLowerCase());
             }
