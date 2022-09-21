@@ -12,7 +12,7 @@ class CameraView extends StatefulWidget {
       {Key? key,
       required this.title,
       required this.customPaint,
-      this.text,
+      required this.text,
       required this.onImage,
       this.onScreenModeChanged,
       this.initialDirection = CameraLensDirection.back})
@@ -20,7 +20,7 @@ class CameraView extends StatefulWidget {
 
   final String title;
   final CustomPaint? customPaint;
-  final String? text;
+  final List<String> text;
   final Function(InputImage inputImage) onImage;
   final Function(ScreenMode mode)? onScreenModeChanged;
   final CameraLensDirection initialDirection;
@@ -90,17 +90,14 @@ class _CameraViewState extends State<CameraView> {
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
-    return Container(
-      color: Colors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
+    return ListView(
+      children: <Widget>[
+        for (var i in widget.text)
           Text(
-            "Buraya Bakarlar",
-            style: const TextStyle(color: Colors.white),
+            i,
+            style: TextStyle(color: Colors.black),
           )
-        ],
-      ),
+      ],
     );
   }
 

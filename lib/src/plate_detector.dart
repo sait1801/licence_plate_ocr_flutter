@@ -14,7 +14,8 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   bool _canProcess = true;
   bool _isBusy = false;
   CustomPaint? _customPaint;
-  String? _text;
+  List<String> _text = [];
+  String title = "Plate";
   int counter = 0;
   FireStoreHelper _fireStoreHelper = FireStoreHelper();
 
@@ -64,7 +65,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     if (_isBusy) return;
     _isBusy = true;
     setState(() {
-      _text = '';
+      title = "";
     });
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
@@ -79,15 +80,18 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
             if (!(_isNumeric(strPart[0])) &&
                 !(_isNumeric(strPart[1])) &&
                 !(_isNumeric(strPart[2]))) {
-              var time2 = DateTime.now();
-              var timeDifference = time2.difference(time1).inSeconds;
-              time1 = DateTime.now();
+              // var time2 = DateTime.now();
+              // var timeDifference = time2.difference(time1).inSeconds;
+              // time1 = DateTime.now();
 
               print("**********************************");
               print(arr);
-              print(timeDifference);
+              // print(timeDifference);
               print("**********************************");
               _fireStoreHelper.checkPlates(arr.toLowerCase());
+              setState(() {
+                _text = _fireStoreHelper.texts;
+              });
             }
           }
         }

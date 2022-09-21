@@ -8,13 +8,14 @@ class FireStoreHelper {
       FirebaseFirestore.instance.collection("plates");
 
   List<String> plates = [];
+  List<String> texts = [];
 
   Future<void> createPlate(String plate) async {
     try {
       await platesReference.doc(plate).set(
         {'plate_id': plate},
       );
-      print("Plate is created $plate");
+      texts.add("$plate is created.");
     } catch (e) {
       print(e);
       rethrow;
@@ -24,11 +25,11 @@ class FireStoreHelper {
   Future<void> checkPlates(String plate) async {
     try {
       if (plates.contains(plate)) {
-        print("Plate is already on memory");
+        texts.add("$plate is already on memory");
       } else {
         final platesSnapshot = await platesReference.doc(plate).get();
         if (platesSnapshot.exists) {
-          print("Plate is already on database");
+          texts.add("$plate is already on database");
         } else {
           createPlate(plate);
           plates.add(plate);
