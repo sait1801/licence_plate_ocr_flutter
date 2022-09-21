@@ -24,14 +24,11 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   void dispose() {
     _canProcess = false;
     _textRecognizer.close();
-    _fireStoreHelper.createPlateMap();
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    _fireStoreHelper.createPlateMap();
-  }
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
 
   @override
   Widget build(BuildContext context) {

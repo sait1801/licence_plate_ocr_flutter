@@ -23,7 +23,6 @@ class FireStoreHelper {
 
   Future<void> checkPlates(String plate) async {
     try {
-      print(plates);
       if (plates.contains(plate)) {
         print("Plate is already on memory");
       } else {
@@ -31,21 +30,10 @@ class FireStoreHelper {
         if (platesSnapshot.exists) {
           print("Plate is already on database");
         } else {
+          createPlate(plate);
           plates.add(plate);
-          print("Plate is added to the memory.");
         }
       }
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
-
-  Future<void> createPlateMap() async {
-    try {
-      plates.forEach((plate) {
-        createPlate(plate);
-      });
     } catch (e) {
       print(e);
       rethrow;
