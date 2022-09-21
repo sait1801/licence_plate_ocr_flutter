@@ -11,7 +11,6 @@ class FireStoreHelper {
 
   Future<void> createPlate(String plate) async {
     try {
-      plates.add(plate);
       await platesReference.doc(plate).set(
         {'plate_id': plate},
       );
@@ -24,17 +23,17 @@ class FireStoreHelper {
 
   Future<void> checkPlates(String plate) async {
     try {
+      print(plates);
       if (plates.contains(plate)) {
         print("Plate is already on memory");
-        return;
       } else {
         final platesSnapshot = await platesReference.doc(plate).get();
         if (platesSnapshot.exists) {
           print("Plate is already on database");
         } else {
-          createPlate(plate);
+          plates.add(plate);
+          print("Plate is added to the memory.");
         }
-        return;
       }
     } catch (e) {
       print(e);

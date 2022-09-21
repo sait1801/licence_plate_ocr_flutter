@@ -16,12 +16,13 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   CustomPaint? _customPaint;
   String? _text;
   int counter = 0;
+  FireStoreHelper _fireStoreHelper = FireStoreHelper();
 
   @override
   void dispose() {
     _canProcess = false;
     _textRecognizer.close();
-    FireStoreHelper().createPlateMap();
+    _fireStoreHelper.createPlateMap();
     super.dispose();
   }
 
@@ -66,7 +67,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
       final recognizedText = await _textRecognizer.processImage(inputImage);
       List<String> recognisedarray = recognizedText.text.split("\n");
       for (var arr in recognisedarray) {
-        arr = arr.replaceAll(" ", "");
+        arr = arr.replaceAll(RegExp('[^A-Z0-9]'), '');
         if (arr.length == 7) {
           String numPart = arr.substring(0, 4);
           String strPart = arr.substring(4);
@@ -77,10 +78,9 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
               print("**********************************");
               print(arr);
               print("**********************************");
-              FireStoreHelper().checkPlates(arr.toLowerCase());
+              _fireStoreHelper.checkPlates(arr.toLowerCase());
             }
           }
-          ;
         }
       }
     }
