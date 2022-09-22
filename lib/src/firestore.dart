@@ -29,6 +29,7 @@ class FireStoreHelper {
       } else {
         final platesSnapshot = await platesReference.doc(plate).get();
         if (platesSnapshot.exists) {
+          plates.add(plate);
           texts.add("$plate is already on database");
         } else {
           createPlate(plate);
