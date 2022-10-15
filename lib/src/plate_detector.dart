@@ -3,22 +3,20 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:plate_recognition/src/firestore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'camera_view.dart';
 
-var channel = WebSocketChannel.connect(
-  Uri.parse('wss://ifelse.io'),
-);
+late var channel;
 
 class TextRecognizerView extends StatefulWidget {
-  // FirebaseCrud _firebseCrud = FirebaseCrud();
+  const TextRecognizerView({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _TextRecognizerViewState createState() => _TextRecognizerViewState();
 }
 
 class _TextRecognizerViewState extends State<TextRecognizerView> {
-  final TextRecognizer _textRecognizer = TextRecognizer();
   bool _canProcess = true;
   bool _isBusy = false;
   CustomPaint? _customPaint;
@@ -28,11 +26,17 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   @override
   void dispose() {
     _canProcess = false;
-    _textRecognizer.close();
-    FireStoreHelper().createPlateMap();
     channel.sink.close();
 
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    channel = WebSocketChannel.connect(
+      Uri.parse('wss://ws.ifelse.io/'),
+    );
   }
 
   @override
@@ -54,17 +58,24 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
               counter++;
             },
           ),
-          StreamBuilder(builder: ((context, snapshot) {
-            return Positioned(
-                top: 150,
-                left: 200,
-                child: SizedBox(
-                  child: Text(
-                    snapshot.hasData ? snapshot.data.toString() : 'None',
-                    style: const TextStyle(color: Colors.white, fontSize: 25),
-                  ),
-                ));
-          })),
+          StreamBuilder(
+            stream: channel.stream,
+            builder: ((context, snapshot) {
+              print('connectionstate:${snapshot.connectionState}');
+              print(snapshot.data);
+              return Positioned(
+                  top: 150,
+                  left: 0,
+                  child: SizedBox(
+                    child: Text(
+                      snapshot.hasData
+                          ? snapshot.data.toString()
+                          : snapshot.connectionState.toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 25),
+                    ),
+                  ));
+            }),
+          ),
         ]),
       ),
     );
@@ -78,15 +89,14 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       // compute(sendImage, inputImage.bytes);
-      await sendImage(inputImage.bytes);
+      sendImage(inputImage.bytes);
     }
     _isBusy = false;
   }
 }
 
-Future<void> sendImage(Uint8List? bytes) async {
+void sendImage(Uint8List? bytes) {
   String base64 = base64Encode(bytes!);
-  print(base64);
 
   channel.sink.add(base64);
 }
