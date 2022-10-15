@@ -22,6 +22,9 @@ dependencies:
   firebase_core: ^1.22.0
   cloud_firestore: ^3.4.7
 
+  #websocket
+  web_socket_channel: ^2.2.0
+
   #Mlkit plugins
   google_mlkit_commons: ^0.2.0
   google_mlkit_text_recognition: ^0.4.0

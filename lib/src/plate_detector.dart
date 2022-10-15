@@ -1,7 +1,15 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:plate_recognition/src/firestore.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'camera_view.dart';
+
+var channel = WebSocketChannel.connect(
+  Uri.parse('wss://ifelse.io'),
+);
 
 class TextRecognizerView extends StatefulWidget {
   // FirebaseCrud _firebseCrud = FirebaseCrud();
@@ -22,6 +30,8 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     _canProcess = false;
     _textRecognizer.close();
     FireStoreHelper().createPlateMap();
+    channel.sink.close();
+
     super.dispose();
   }
 
@@ -30,63 +40,53 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: CameraView(
-          title: 'Text Detector',
-          customPaint: _customPaint,
-          text: _text,
-          onImage: (inputImage) {
-            if (counter % 10 == 0) {
-              // this will affect the performance of app
-              processImage(inputImage);
-              counter = 0;
-            }
-            counter++;
-          },
-        ),
+        body: Stack(children: [
+          CameraView(
+            title: 'Text Detector',
+            customPaint: _customPaint,
+            text: _text,
+            onImage: (inputImage) {
+              if (counter % 10 == 0) {
+                // this will affect the performance of app
+                processImage(inputImage);
+                counter = 0;
+              }
+              counter++;
+            },
+          ),
+          StreamBuilder(builder: ((context, snapshot) {
+            return Positioned(
+                top: 150,
+                left: 200,
+                child: SizedBox(
+                  child: Text(
+                    snapshot.hasData ? snapshot.data.toString() : 'None',
+                    style: const TextStyle(color: Colors.white, fontSize: 25),
+                  ),
+                ));
+          })),
+        ]),
       ),
     );
-  }
-
-  bool _isNumeric(String str) {
-    if (str == null) {
-      return false;
-    }
-    return double.tryParse(str) != null;
   }
 
   Future<void> processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
-    setState(() {
-      _text = '';
-    });
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-      final recognizedText = await _textRecognizer.processImage(inputImage);
-      List<String> recognisedarray = recognizedText.text.split("\n");
-      for (var arr in recognisedarray) {
-        arr = arr.replaceAll(" ", "");
-        if (arr.length == 7) {
-          String numPart = arr.substring(0, 4);
-          String strPart = arr.substring(4);
-          if (_isNumeric(numPart)) {
-            if (!(_isNumeric(strPart[0])) &&
-                !(_isNumeric(strPart[1])) &&
-                !(_isNumeric(strPart[2]))) {
-              print("**********************************");
-              print(arr);
-              print("**********************************");
-              FireStoreHelper().checkPlates(arr.toLowerCase());
-            }
-          }
-          ;
-        }
-      }
+      // compute(sendImage, inputImage.bytes);
+      await sendImage(inputImage.bytes);
     }
     _isBusy = false;
-    if (mounted) {
-      setState(() {});
-    }
   }
+}
+
+Future<void> sendImage(Uint8List? bytes) async {
+  String base64 = base64Encode(bytes!);
+  print(base64);
+
+  channel.sink.add(base64);
 }
