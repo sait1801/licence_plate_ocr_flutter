@@ -1,12 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import 'camera_view.dart';
 
-late var channel;
+import 'package:http/http.dart' as http;
+
+WebSocketChannel channel =
+    IOWebSocketChannel.connect("ws://138.68.181.111/anprapi");
 
 class TextRecognizerView extends StatefulWidget {
   const TextRecognizerView({super.key});
@@ -31,16 +37,21 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('wss://ws.ifelse.io/'),
-    );
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // channel = WebSocketChannel.connect(
+  //   //   Uri.parse('ws://http://138.68.181.111/'),
+  //   // );
+
+  //   WebSocketChannel channel =
+  //       IOWebSocketChannel.connect("ws://http://138.68.181.111/");
+  // }
 
   @override
   Widget build(BuildContext context) {
+    String? titlebar = '';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -50,7 +61,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
             customPaint: _customPaint,
             text: _text,
             onImage: (inputImage) {
-              if (counter % 10 == 0) {
+              if (counter % 5 == 0) {
                 // this will affect the performance of app
                 processImage(inputImage);
                 counter = 0;
@@ -61,19 +72,25 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
           StreamBuilder(
             stream: channel.stream,
             builder: ((context, snapshot) {
+              print("hello");
               print('connectionstate:${snapshot.connectionState}');
-              print(snapshot.data);
+              print(snapshot.error);
+
               return Positioned(
-                  top: 150,
-                  left: 0,
+                top: 150,
+                left: 0,
+                child: SizedBox(
                   child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
                     child: Text(
                       snapshot.hasData
                           ? snapshot.data.toString()
-                          : snapshot.connectionState.toString(),
+                          : snapshot.error.toString(),
                       style: const TextStyle(color: Colors.white, fontSize: 25),
                     ),
-                  ));
+                  ),
+                ),
+              );
             }),
           ),
         ]),
@@ -88,15 +105,31 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-      // compute(sendImage, inputImage.bytes);
       sendImage(inputImage.bytes);
     }
     _isBusy = false;
   }
 }
 
-void sendImage(Uint8List? bytes) {
-  String base64 = base64Encode(bytes!);
+Future<void> sendImage(Uint8List? bytes) async {
+  // String base64 = base64Encode(bytes!);
+  // var image = MemoryImage(bytes!);
 
-  channel.sink.add(base64);
+  // var file = http.MultipartFile.fromBytes('file', bytes!);
+
+  // channel.sink.add(file);
+
+  print(bytes!.first.toString());
+
+  Directory tempdirectory = await getTemporaryDirectory();
+  var file = File('${tempdirectory.path}/temp');
+  file.writeAsBytesSync(bytes!);
+  var request =
+      http.MultipartRequest("POST", Uri.parse("http://138.68.181.111/anprapi"));
+  //add text fields
+  //create multipart using filepath, string or bytes
+  var pic = await http.MultipartFile.fromPath("imagefile", file.path);
+  //add multipart to request
+  request.files.add(pic);
+  channel.sink.add(request);
 }

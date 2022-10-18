@@ -30,6 +30,8 @@ dependencies:
   google_mlkit_text_recognition: ^0.4.0
   google_mlkit_object_detection: ^0.5.0
 
+  http: ^0.13.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -41,5 +43,6 @@ flutter:
 
   assets:
     - assets/ml/object_labeler.tflite
+    - assets/plate.png
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg
