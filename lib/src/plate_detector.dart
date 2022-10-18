@@ -12,7 +12,7 @@ import 'camera_view.dart';
 import 'package:http/http.dart' as http;
 
 WebSocketChannel channel =
-    IOWebSocketChannel.connect("ws://138.68.181.111/anprapi");
+    IOWebSocketChannel.connect("wss://cheque-price.herokuapp.com/uploader");
 
 class TextRecognizerView extends StatefulWidget {
   const TextRecognizerView({super.key});
@@ -115,21 +115,22 @@ Future<void> sendImage(Uint8List? bytes) async {
   // String base64 = base64Encode(bytes!);
   // var image = MemoryImage(bytes!);
 
-  // var file = http.MultipartFile.fromBytes('file', bytes!);
+  var pic = http.MultipartFile.fromBytes('file', bytes!);
 
-  // channel.sink.add(file);
+  // channel.sink.add(pic);
 
   print(bytes!.first.toString());
 
-  Directory tempdirectory = await getTemporaryDirectory();
-  var file = File('${tempdirectory.path}/temp');
-  file.writeAsBytesSync(bytes!);
-  var request =
-      http.MultipartRequest("POST", Uri.parse("http://138.68.181.111/anprapi"));
+  // Directory tempdirectory = await getTemporaryDirectory();
+  // var file = File('${tempdirectory.path}/temp');
+  // file.writeAsBytesSync(bytes);
+  // var request = http.MultipartRequest(
+  // "POST", Uri.parse("https://cheque-price.herokuapp.com/uploader"));
   //add text fields
   //create multipart using filepath, string or bytes
-  var pic = await http.MultipartFile.fromPath("imagefile", file.path);
+  // var pic = await http.MultipartFile.fromPath("imagefile", file.path);
   //add multipart to request
-  request.files.add(pic);
-  channel.sink.add(request);
+  // request.files.add(pic);
+  // channel.sink.add(request);
+  channel.sink.add(pic);
 }
